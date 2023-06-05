@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.1/mustache.min.js"
+        integrity="sha512-3GRj7sme01zpWwRNPNy48Rda1bD9cq34lqYG5vb8ZXGc+wRqsoBJ3+AC25IYW5w5SrWlzHqIpNIxZt5QF9sXLg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style type="text/css">
+        html,
+        body {
+            font-family: sans-serif;
+            font-size: 10px;
+        }
+
+        table,
+        td,
+        tr {
+            border: 1px solid black;
+            border-spacing: 0;
+            border-collapse: collapse;
+            padding: 2px 5px 0px 5px;
+        }
+
+        td[rowspan] {
+            vertical-align: top;
+        }
+    </style>
+</head>
+
+<body>
+    branch: <input type="text" id="branch" name="branch" required size="20" value="" onchange="update_main_table()" />
+    <br>
+    <br>
+    <div id="main_table_div">
+        <table id="main_table"></table>
+    </div>
+    <script id="report_tmpl" type="x-tmpl-mustache">
+        <tr>
+            <td>{{repo}}</td>
+            <td>{{action}}</td>
+            <td><a href="https://github.com/eclipse-zenoh/{{repo}}/actions?query=workflow%3A%22{{action}}%22+branch%3A{{branch}}"><img src="https://github.com/eclipse-zenoh/{{repo}}/workflows/{{action}}/badge.svg{{badge_query}}" alt="{{action}}" style="max-width: 100%;"></a></td>
+        </tr>
+    </script>
+
+    <script type="text/javascript">
+        repos = {
+            "zenoh": ["CI", "Release"],
+            "zenoh-python": ["CI", "Release"],
+            "zenoh-c": ["CI", "Release"],
+            "zenoh-cpp": ["CI", "Release"],
+            "zenoh-pico": ["Release"],
+            "zenoh-plugin-dds": ["Rust", "Release"],
+            "zenoh-plugin-mqtt": ["Rust", "Release"],
+            "zenoh-plugin-ros1": ["CI"],
+            "zenoh-plugin-webserver": ["CI", "Release"],
+            "zenoh-backend-filesystem": ["CI", "Release"],
+            "zenoh-backend-rocksdb": ["CI", "Release"],
+            "zenoh-backend-influxdb": ["CI", "Release"],
+            "zenoh-backend-s3": ["CI", "Release"],
+        }
+
+        function gen_report(repo, actions, branch) {
+            badge_query = branch ? "?branch=" + branch : "";
+            report = "";
+            for (action of actions) {
+                report += Mustache.render(
+                    document.getElementById("report_tmpl").innerHTML,
+                    { repo, action, branch, badge_query }
+                );
+            }
+            return report;
+        }
+
+        function update_main_table() {
+            branch = document.getElementById("branch").value;
+            reports = "";
+            for (let repo in repos) {
+                reports += gen_report(repo, repos[repo], branch);
+            }
+
+            document.getElementById("main_table").innerHTML = reports;
+        }
+
+        update_main_table();
+    </script>
+</body>
