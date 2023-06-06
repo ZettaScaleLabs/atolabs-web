@@ -81,6 +81,9 @@
             document.getElementById("main_table").innerHTML = reports;
         }
 
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        document.getElementById("branch").value = urlParams.get('branch');
         update_main_table();
     </script>
 </body>
