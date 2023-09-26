@@ -5,11 +5,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.1/mustache.min.js"
         integrity="sha512-3GRj7sme01zpWwRNPNy48Rda1bD9cq34lqYG5vb8ZXGc+wRqsoBJ3+AC25IYW5w5SrWlzHqIpNIxZt5QF9sXLg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css" integrity="sha512-q3eWabyZPc1XTCmF+8/LuE1ozpg5xxn7iO89yfSOd5/oKvyqLngoNGsx8jq92Y8eXJ/IRxQbEC+FGSYxtk2oiw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style type="text/css">
         html,
         body {
             font-family: sans-serif;
             font-size: 10px;
+        }
+        a {
+            color: rgb(19, 17, 156);
         }
 
         table,
@@ -28,63 +33,117 @@
 </head>
 
 <body>
-    branch: <input type="text" id="branch" name="branch" required size="20" value="" onchange="update_main_table()" />
-    <br>
-    <br>
-    <div id="main_table_div">
-        <table id="main_table"></table>
+    <div id="inputs_div" style="margin:5px;">
+        branch: <input type="text" id="branch" name="branch" required size="20" value="" onchange="update_public_table();update_private_table()" />
     </div>
-    <script id="report_tmpl" type="x-tmpl-mustache">
-        <tr>
+    <div id="public_table_div" style="float:left;margin:5px;">
+        <table id="public_table"></table>
+    </div>
+    <script id="public_report_tmpl" type="x-tmpl-mustache">
+        <tr style="height:25px;">
             <td>{{repo}}</td>
             <td>{{action}}</td>
-            <td><a href="https://github.com/eclipse-zenoh/{{repo}}/actions?query=workflow%3A%22{{action}}%22+branch%3A{{branch}}"><img src="https://github.com/eclipse-zenoh/{{repo}}/workflows/{{action}}/badge.svg{{badge_query}}" alt="{{action}}" style="max-width: 100%;"></a></td>
+            <td><a href="https://github.com/{{repo}}/actions?query=workflow%3A%22{{action}}%22+branch%3A{{branch}}"><img src="https://github.com/{{repo}}/workflows/{{action}}/badge.svg{{badge_query}}" alt="{{action}}" style="max-width: 100%;"></a></td>
         </tr>
     </script>
-
     <script type="text/javascript">
-        repos = {
-            "zenoh": ["CI", "Release"],
-            "zenoh-python": ["CI", "Release"],
-            "zenoh-c": ["CI", "Release"],
-            "zenoh-cpp": ["CI", "Release"],
-            "zenoh-kotlin": ["CI", "Release"],
-            "zenoh-pico": ["Release"],
-            "zenoh-plugin-dds": ["Rust", "Release"],
-            "zenoh-plugin-mqtt": ["Rust", "Release"],
-            "zenoh-plugin-ros1": ["CI"],
-            "zenoh-plugin-webserver": ["CI", "Release"],
-            "zenoh-backend-filesystem": ["CI", "Release"],
-            "zenoh-backend-rocksdb": ["CI", "Release"],
-            "zenoh-backend-influxdb": ["CI", "Release"],
-            "zenoh-backend-s3": ["CI", "Release"],
+        public_repos = {
+            "eclipse-zenoh/zenoh": ["CI", "Release"],
+            "eclipse-zenoh/zenoh-python": ["CI", "Release"],
+            "eclipse-zenoh/zenoh-c": ["CI", "Release"],
+            "eclipse-zenoh/zenoh-cpp": ["CI", "Release"],
+            "eclipse-zenoh/zenoh-kotlin": ["CI", "Release"],
+            "eclipse-zenoh/zenoh-pico": ["Release"],
+            "eclipse-zenoh/zenoh-plugin-dds": ["Rust", "Release"],
+            "eclipse-zenoh/zenoh-plugin-mqtt": ["Rust", "Release"],
+            "eclipse-zenoh/zenoh-plugin-ros1": ["CI"],
+            "eclipse-zenoh/zenoh-plugin-webserver": ["CI", "Release"],
+            "eclipse-zenoh/zenoh-backend-filesystem": ["CI", "Release"],
+            "eclipse-zenoh/zenoh-backend-rocksdb": ["CI", "Release"],
+            "eclipse-zenoh/zenoh-backend-influxdb": ["CI", "Release"],
+            "eclipse-zenoh/zenoh-backend-s3": ["CI", "Release"],
         }
 
-        function gen_report(repo, actions, branch) {
+        function gen_public_report(repo, actions, branch) {
             badge_query = branch ? "?branch=" + branch : "";
             report = "";
             for (action of actions) {
                 report += Mustache.render(
-                    document.getElementById("report_tmpl").innerHTML,
+                    document.getElementById("public_report_tmpl").innerHTML,
                     { repo, action, branch, badge_query }
                 );
             }
             return report;
         }
 
-        function update_main_table() {
+        function update_public_table() {
             branch = document.getElementById("branch").value;
             reports = "";
-            for (let repo in repos) {
-                reports += gen_report(repo, repos[repo], branch);
+            for (let repo in public_repos) {
+                reports += gen_public_report(repo, public_repos[repo], branch);
             }
 
-            document.getElementById("main_table").innerHTML = reports;
+            document.getElementById("public_table").innerHTML = reports;
+        }
+    </script>
+
+    <div id="private_table_div" style="float:left;margin:5px;">
+        <table id="private_table"></table>
+    </div>
+    <script id="private_report_tmpl" type="x-tmpl-mustache">
+        <tr style="height:25px;">
+            <td>{{repo}}</td>
+            <td>
+                <a href="https://github.com/{{repo}}/actions?query=workflow%3A%22{{action}}%22+branch%3A{{branch}}">
+                    {{action}}
+                </a>
+            </td>
+            <td>
+                <a href="https://github.com/{{repo}}/actions?query=workflow%3A%22{{action}}%22+branch%3A{{branch}}" target="_blank">
+                    <i style='font-size:16px' class="material-icons">&#xe8d8;</i>
+                </a>
+            </td>
+            <td>
+                <a href="#" onClick="window.open('https://github.com/{{repo}}/actions?query=workflow%3A%22{{action}}%22+branch%3A{{branch}}','{{action}}','width=600,height=800,left=600');return false;">
+                    <i style='font-size:16px' class='far'>&#xf2d2;</i>
+                </a>
+            </td>
+        </tr>
+    </script>
+    <script type="text/javascript">
+        private_repos = {
+            "ZettaScaleLabs/zenoh-tests": ["Base tests", "Bridge tests", "Backends tests", "APIs interop tests"],
         }
 
+        function gen_private_report(repo, actions, branch) {
+            report = "";
+            for (action of actions) {
+                report += Mustache.render(
+                    document.getElementById("private_report_tmpl").innerHTML,
+                    { repo, action, branch }
+                );
+            }
+            return report;
+        }
+
+        function update_private_table() {
+            branch = document.getElementById("branch").value;
+            reports = "";
+            for (let repo in private_repos) {
+                console.log(repo);
+                reports += gen_private_report(repo, private_repos[repo], branch);
+                console.log(reports);
+            }
+
+            document.getElementById("private_table").innerHTML = reports;
+        }
+    </script>
+
+    <script>
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         document.getElementById("branch").value = urlParams.get('branch');
-        update_main_table();
+        update_public_table();
+        update_private_table();
     </script>
 </body>
