@@ -42,35 +42,34 @@
     <script id="public_report_tmpl" type="x-tmpl-mustache">
         <tr style="height:25px;">
             <td>{{repo}}</td>
-            <td>{{action}}</td>
-            <td><a href="https://github.com/{{repo}}/actions?query=workflow%3A%22{{action}}%22+branch%3A{{branch}}"><img src="https://github.com/{{repo}}/workflows/{{action}}/badge.svg{{badge_query}}" alt="{{action}}" style="max-width: 100%;"></a></td>
+            <td>{{workflow}}</td>
+            <td><a href="https://github.com/{{repo}}/actions/workflows/{{workflow}}?query=branch%3A{{branch}}"><img src="https://github.com/{{repo}}/actions/workflows/{{workflow}}/badge.svg?branch={{branch}}" alt="{{workflow}}" style="max-width: 100%;"></a></td>
         </tr>
     </script>
     <script type="text/javascript">
         public_repos = {
-            "eclipse-zenoh/zenoh": ["CI", "Release"],
-            "eclipse-zenoh/zenoh-python": ["CI", "Release"],
-            "eclipse-zenoh/zenoh-c": ["CI", "Release"],
-            "eclipse-zenoh/zenoh-cpp": ["CI", "Release"],
-            "eclipse-zenoh/zenoh-kotlin": ["CI", "Release"],
-            "eclipse-zenoh/zenoh-pico": ["Release"],
-            "eclipse-zenoh/zenoh-plugin-dds": ["Rust", "Release"],
-            "eclipse-zenoh/zenoh-plugin-mqtt": ["Rust", "Release"],
-            "eclipse-zenoh/zenoh-plugin-ros1": ["CI"],
-            "eclipse-zenoh/zenoh-plugin-webserver": ["CI", "Release"],
-            "eclipse-zenoh/zenoh-backend-filesystem": ["CI", "Release"],
-            "eclipse-zenoh/zenoh-backend-rocksdb": ["CI", "Release"],
-            "eclipse-zenoh/zenoh-backend-influxdb": ["CI", "Release"],
-            "eclipse-zenoh/zenoh-backend-s3": ["CI", "Release"],
+            "eclipse-zenoh/zenoh": ["ci.yml", "release.yml"],
+            "eclipse-zenoh/zenoh-python": ["ci.yml", "release.yml"],
+            "eclipse-zenoh/zenoh-c": ["ci.yml", "release.yml"],
+            "eclipse-zenoh/zenoh-cpp": ["ci.yml", "release.yml"],
+            "eclipse-zenoh/zenoh-kotlin": ["ci.yml", "release.yml"],
+            "eclipse-zenoh/zenoh-pico": ["release.yml"],
+            "eclipse-zenoh/zenoh-plugin-dds": ["rust.yml", "release.yml"],
+            "eclipse-zenoh/zenoh-plugin-mqtt": ["ci.yml", "release.yml"],
+            "eclipse-zenoh/zenoh-plugin-ros1": ["ci.yml"],
+            "eclipse-zenoh/zenoh-plugin-webserver": ["ci.yml", "release.yml"],
+            "eclipse-zenoh/zenoh-backend-filesystem": ["ci.yml", "release.yml"],
+            "eclipse-zenoh/zenoh-backend-rocksdb": ["ci.yml", "release.yml"],
+            "eclipse-zenoh/zenoh-backend-influxdb": ["ci.yml", "release.yml"],
+            "eclipse-zenoh/zenoh-backend-s3": ["ci.yml", "release.yml"],
         }
 
-        function gen_public_report(repo, actions, branch) {
-            badge_query = branch ? "?branch=" + branch : "";
+        function gen_public_report(repo, workflows, branch) {
             report = "";
-            for (action of actions) {
+            for (workflow of workflows) {
                 report += Mustache.render(
                     document.getElementById("public_report_tmpl").innerHTML,
-                    { repo, action, branch, badge_query }
+                    { repo, workflow, branch }
                 );
             }
             return report;
