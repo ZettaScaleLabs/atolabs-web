@@ -41,9 +41,9 @@
     </div>
     <script id="public_report_tmpl" type="x-tmpl-mustache">
         <tr style="height:25px;">
-            <td>{{repo}}</td>
-            <td>{{workflow}}</td>
-            <td><a href="https://github.com/{{repo}}/actions/workflows/{{workflow}}?query=branch%3A{{branch}}"><img src="https://github.com/{{repo}}/actions/workflows/{{workflow}}/badge.svg?branch={{branch}}" alt="{{workflow}}" style="max-width: 100%;"></a></td>
+            <td><a href="https://github.com/{{repo}}" target="_blank">{{repo}}</a></td>
+            <td><a href="https://github.com/{{repo}}/blob/{{branch}}/.github/workflows/{{workflow}}" target="_blank">{{workflow}}</a></td>
+            <td><a href="https://github.com/{{repo}}/actions/workflows/{{workflow}}?query=branch%3A{{branch}}" target="_blank"><img src="https://github.com/{{repo}}/actions/workflows/{{workflow}}/badge.svg?branch={{branch}}" alt="{{workflow}}" style="max-width: 100%;"></a></td>
         </tr>
     </script>
     <script type="text/javascript">
@@ -93,7 +93,7 @@
     </div>
     <script id="private_report_tmpl" type="x-tmpl-mustache">
         <tr style="height:25px;">
-            <td>{{repo}}</td>
+            <td><a href="https://github.com/{{repo}}" target="_blank">{{repo}}</a></td>
             <td>
                 <a href="https://github.com/{{repo}}/actions?query=workflow%3A%22{{action}}%22+branch%3A{{branch}}">
                     {{action}}
