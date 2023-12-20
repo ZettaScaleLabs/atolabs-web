@@ -42,28 +42,29 @@
     <script id="public_report_tmpl" type="x-tmpl-mustache">
         <tr style="height:25px;">
             <td><a href="https://github.com/{{repo}}" target="_blank">{{repo}}</a></td>
+            <td><a href="https://github.com/{{repo}}/tree/{{branch}}" target="_blank">{{branch}}</a></td>
             <td><a href="https://github.com/{{repo}}/blob/{{branch}}/.github/workflows/{{workflow}}" target="_blank">{{workflow}}</a></td>
             <td><a href="https://github.com/{{repo}}/actions/workflows/{{workflow}}?query=branch%3A{{branch}}" target="_blank"><img src="https://github.com/{{repo}}/actions/workflows/{{workflow}}/badge.svg?branch={{branch}}" alt="{{workflow}}" style="max-width: 100%;"></a></td>
         </tr>
     </script>
     <script type="text/javascript">
         public_repos = {
-            "eclipse-zenoh/zenoh": ["ci.yml", "release.yml"],
-            "eclipse-zenoh/zenoh-python": ["ci.yml", "release.yml"],
-            "eclipse-zenoh/zenoh-c": ["ci.yml", "release.yml"],
-            "eclipse-zenoh/zenoh-cpp": ["ci.yml", "release.yml"],
-            "eclipse-zenoh/zenoh-kotlin": ["ci.yml", "release.yml"],
-            "eclipse-zenoh/zenoh-java": ["ci.yml", "release.yml"],
-            "eclipse-zenoh/zenoh-pico": ["release.yml"],
-            "eclipse-zenoh/zenoh-plugin-dds": ["rust.yml", "release.yml"],
-            "eclipse-zenoh/zenoh-plugin-mqtt": ["ci.yml", "release.yml"],
-            "eclipse-zenoh/zenoh-plugin-ros1": ["ci.yml", "release.yml"],
-            "eclipse-zenoh/zenoh-plugin-ros2dds": ["rust.yml", "release.yml"],
-            "eclipse-zenoh/zenoh-plugin-webserver": ["ci.yml", "release.yml"],
-            "eclipse-zenoh/zenoh-backend-filesystem": ["ci.yml", "release.yml"],
-            "eclipse-zenoh/zenoh-backend-rocksdb": ["ci.yml", "release.yml"],
-            "eclipse-zenoh/zenoh-backend-influxdb": ["ci.yml", "release.yml"],
-            "eclipse-zenoh/zenoh-backend-s3": ["ci.yml", "release.yml"],
+            "eclipse-zenoh/zenoh": { default: "master", workflows: ["ci.yml", "release.yml"] },
+            "eclipse-zenoh/zenoh-python": { default: "master", workflows: ["ci.yml", "release.yml"] },
+            "eclipse-zenoh/zenoh-c": { default: "master", workflows: ["ci.yml", "release.yml"] },
+            "eclipse-zenoh/zenoh-cpp": { default: "main", workflows: ["ci.yml", "release.yml"] },
+            "eclipse-zenoh/zenoh-kotlin": { default: "main", workflows: ["ci.yml", "release.yml"] },
+            "eclipse-zenoh/zenoh-java": { default: "master", workflows: ["ci.yml", "release.yml"] },
+            "eclipse-zenoh/zenoh-pico": { default: "master", workflows: ["release.yml"] },
+            "eclipse-zenoh/zenoh-plugin-dds": { default: "master", workflows: ["rust.yml", "release.yml"] },
+            "eclipse-zenoh/zenoh-plugin-mqtt": { default: "master", workflows: ["ci.yml", "release.yml"] },
+            "eclipse-zenoh/zenoh-plugin-ros1": { default: "main", workflows: ["ci.yml", "release.yml"] },
+            "eclipse-zenoh/zenoh-plugin-ros2dds": { default: "main", workflows: ["rust.yml", "release.yml"] },
+            "eclipse-zenoh/zenoh-plugin-webserver": { default: "master", workflows: ["ci.yml", "release.yml"] },
+            "eclipse-zenoh/zenoh-backend-filesystem": { default: "master", workflows: ["ci.yml", "release.yml"] },
+            "eclipse-zenoh/zenoh-backend-rocksdb": { default: "master", workflows: ["ci.yml", "release.yml"] },
+            "eclipse-zenoh/zenoh-backend-influxdb": { default: "master", workflows: ["ci.yml", "release.yml"] },
+            "eclipse-zenoh/zenoh-backend-s3": { default: "main", workflows: ["ci.yml", "release.yml"] },
         }
 
         function gen_public_report(repo, workflows, branch) {
@@ -78,10 +79,13 @@
         }
 
         function update_public_table() {
-            branch = document.getElementById("branch").value;
             reports = "";
             for (let repo in public_repos) {
-                reports += gen_public_report(repo, public_repos[repo], branch);
+                branch = document.getElementById("branch").value;
+                if (branch == "") {
+                    branch = public_repos[repo].default;
+                }
+                reports += gen_public_report(repo, public_repos[repo].workflows, branch);
             }
 
             document.getElementById("public_table").innerHTML = reports;
@@ -94,6 +98,7 @@
     <script id="private_report_tmpl" type="x-tmpl-mustache">
         <tr style="height:25px;">
             <td><a href="https://github.com/{{repo}}" target="_blank">{{repo}}</a></td>
+            <td><a href="https://github.com/{{repo}}/tree/{{branch}}" target="_blank">{{branch}}</a></td>
             <td>
                 <a href="https://github.com/{{repo}}/actions?query=workflow%3A%22{{action}}%22+branch%3A{{branch}}">
                     {{action}}
@@ -113,7 +118,7 @@
     </script>
     <script type="text/javascript">
         private_repos = {
-            "ZettaScaleLabs/zenoh-tests": ["Base tests", "Bridge tests", "Backends tests", "APIs interop tests"],
+            "ZettaScaleLabs/zenoh-tests": { default: "master", workflows: ["Base tests", "Bridge tests", "Backends tests", "APIs interop tests"] },
         }
 
         function gen_private_report(repo, actions, branch) {
@@ -128,12 +133,13 @@
         }
 
         function update_private_table() {
-            branch = document.getElementById("branch").value;
             reports = "";
             for (let repo in private_repos) {
-                console.log(repo);
-                reports += gen_private_report(repo, private_repos[repo], branch);
-                console.log(reports);
+                branch = document.getElementById("branch").value;
+                if (branch == "") {
+                    branch = private_repos[repo].default;
+                }
+                reports += gen_private_report(repo, private_repos[repo].workflows, branch);
             }
 
             document.getElementById("private_table").innerHTML = reports;
